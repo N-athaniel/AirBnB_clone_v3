@@ -23,7 +23,7 @@ def get_all_users():
     """
     l_users = []
     for u in storage.all(User).values():
-        l_users = [u.to_dict()]
+        l_users.append(u.to_dict())
     return jsonify(l_users)
 
 
@@ -72,14 +72,14 @@ def post_user():
         raise a 400 error with the message Missing password
     Returns the new User with the status code 201.
     """
-    if not request.get_json():
+    data = request.get_json()
+    if not data:
         abort(400, description="Not a JSON")
-    elif "email" not in request.get_json():
+    elif "email" not in data:
         abort(400, description="Missing email")
-    elif "password" not in request.get_json():
+    elif "password" not in data:
         abort(400, description="Missing password")
     else:
-        data = request.get_json()
         u = User(**data)
         u.save()
         return make_response(jsonify(u.to_dict()), 201)
@@ -98,13 +98,14 @@ def put_user(users_id):
         raise a 400 error with the message Not a JSON.
     Returns the User object with the status code 200.
     """
-    if not request.get_json():
+    data = request.get_json()
+    if not data:
         abort(400, description="Not a JSON")
     u = storage.get("User", users_id)
     if u is None:
         abort(404)
-    for k, v in request.get_json().items():
-        if k not in ["id", "email", "user_id", "created_at", "updated_at"]:
+    for k, v in data.items():
+        if k not in ["id", "email", "created_at", "updated_at"]:
             setattr(u, k, v)
     u.save()
     return make_response(jsonify(u.to_dict()), 200)

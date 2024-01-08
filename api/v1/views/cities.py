@@ -33,7 +33,7 @@ def get_cities(state_id):
     return jsonify(ct)
 
 
-@app_views.route("/cities/<city_id>",
+@app_views.route("/cities/<city_id>/",
                  methods=["GET"],
                  strict_slashes=False)
 def get_city(city_id):
@@ -78,15 +78,15 @@ def post_city(state_id):
         raise a 400 error with the message Missing name
     Returns the new City with the status code 201.
     """
+    data = request.get_json()
     st = storage.get(State, state_id)
     if st is None:
         abort(404)
-    if not request.get_json():
+    if not data:
         abort(400, description="Not a JSON")
-    elif "name" not in request.get_json():
+    elif "name" not in data:
         abort(400, description="Missing name")
     else:
-        data = request.get_json()
         ct = City(**data)
         ct.state_id = ct.id
         ct.save()
@@ -106,12 +106,13 @@ def put_city(cities_id):
         raise a 400 error with the message Not a JSON.
     Returns the City object with the status code 200.
     """
-    if not request.get_json():
+    data = request.get_json()
+    if not data:
         abort(400, description="Not a JSON")
     ct = storage.get("City", cities_id)
     if ct is None:
         abort(404)
-    for k, v in request.get_json().items():
+    for k, v in data.items():
         if k not in ["id", "state_id", "created_at", "updated_at"]:
             setattr(ct, k, v)
     ct.save()

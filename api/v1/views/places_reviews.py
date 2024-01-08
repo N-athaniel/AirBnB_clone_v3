@@ -33,7 +33,7 @@ def get_reviews(place_id):
     return jsonify(rv)
 
 
-@app_views.route("/reviews/<review_id>",
+@app_views.route("/reviews/<review_id>/",
                  methods=["GET"],
                  strict_slashes=False)
 def get_review(review_id):
@@ -41,7 +41,7 @@ def get_review(review_id):
     Retrieves a review object by id. If the review_id is not
     linked to any review object, raise a 404 error.
     """
-    rv = storage.get("review", review_id)
+    rv = storage.get("Review", review_id)
     if rv is None:
         abort(404)
     return jsonify(rv.to_dict())
@@ -56,7 +56,7 @@ def delete_review(review_id):
     linked to any review object, raise a 404 error.
     Returns an empty dictionary with the status code 200.
     """
-    rv = storage.get("review", review_id)
+    rv = storage.get("Review", review_id)
     if rv is None:
         abort(404)
     rv.delete()
@@ -80,17 +80,20 @@ def post_review(place_id):
         raise a 400 error with the message Missing text.
     Returns the new review with the status code 201.
     """
+    data = request.get_json()
     pl = storage.get(Place, place_id)
     if pl is None:
         abort(404)
-    if not request.get_json():
+    if not data:
         abort(400, description="Not a JSON")
-    elif "user_id" not in request.get_json():
+    elif "user_id" not in data:
         abort(400, description="Missing user_id")
-    elif "text" not in request.get_json():
+    elif "text" not in data:
         abort(400, description="Missing text")
     else:
-        data = request.get_json()
+        us = storage.get("User", data['user_id'])
+        if us is None:
+            abort(404)
         rv = Review(**data)
         rv.place_id = rv.id
         rv.save()
@@ -110,12 +113,13 @@ def put_review(reviews_id):
         raise a 400 error with the message Not a JSON.
     Returns the review object with the status code 200.
     """
-    if not request.get_json():
+    data = request.get_json()
+    if not data:
         abort(400, description="Not a JSON")
-    rv = storage.get("review", reviews_id)
+    rv = storage.get("Review", reviews_id)
     if rv is None:
         abort(404)
-    for k, v in request.get_json().items():
+    for k, v in data.items():
         if k not in ["id", "user_id", "place_id", "created_at", "updated_at"]:
             setattr(rv, k, v)
     rv.save()

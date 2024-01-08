@@ -34,7 +34,7 @@ def get_places(city_id):
     return jsonify(pl)
 
 
-@app_views.route("/places/<place_id>",
+@app_views.route("/places/<place_id>/",
                  methods=["GET"],
                  strict_slashes=False)
 def get_place(place_id):
@@ -79,19 +79,19 @@ def post_place(city_id):
         raise a 400 error with the message Missing name
     Returns the new Place with the status code 201.
     """
+    data = request.get_json()
     ct = storage.get(City, city_id)
     if ct is None:
         abort(404)
-    if not request.get_json():
+    if not data:
         abort(400, description="Not a JSON")
-    elif "user_id" not in request.get_json():
+    elif "user_id" not in data:
         abort(400, description="Missing user_id")
     else:
-        data = request.get_json()
         user = storage.get(User, data['user_id'])
         if not user:
             abort(404)
-        if 'name' not in request.get_json():
+        if 'name' not in data:
             abort(400, description="Missing name")
         pl = Place(**data)
         pl.city_id = pl.id
@@ -112,12 +112,13 @@ def put_place(places_id):
         raise a 400 error with the message Not a JSON.
     Returns the Place object with the status code 200.
     """
-    if not request.get_json():
+    data = request.get_json()
+    if not data:
         abort(400, description="Not a JSON")
     pl = storage.get("Place", places_id)
     if pl is None:
         abort(404)
-    for k, v in request.get_json().items():
+    for k, v in data.items():
         if k not in ["id", "user_id", "city_id", "created_at", "updated_at"]:
             setattr(pl, k, v)
     pl.save()
