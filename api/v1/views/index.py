@@ -1,5 +1,9 @@
 #!/usr/bin/python3
-"""A script that retrieves the number of each objects by type"""
+"""
+flask with general routes
+    routes:
+        /status:    display "status":"OK"
+"""
 
 from api.v1.views import app_views
 from flask import jsonify
@@ -24,13 +28,17 @@ classes = {
 
 @app_views.route("/status", strict_slashes=False)
 def status():
-    """Status of the API"""
+    """
+    Status of the API
+    """
     return jsonify({"status": "OK"})
 
 
 @app_views.route("/stats", strict_slashes=False)
 def stats():
-    """Retrieve the number of each objects by type"""
+    """
+    Retrieve the number of each objects by type.
+    """
     statistics = {}
 
     for key, value in classes.items():
