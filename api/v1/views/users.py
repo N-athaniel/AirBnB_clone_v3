@@ -21,6 +21,7 @@ def get_all_users():
     """
     Retrieves the list of all User objects.
     """
+    l_users = []
     for u in storage.all(User).values():
         l_users = [u.to_dict()]
     return jsonify(l_users)
