@@ -33,4 +33,6 @@ class User(BaseModel, Base):
         """
         the password is hashed to a MD5.
         """
+        if key == "password":
+            value = md5(value.encode()).hexdigest()
         super().__setattr__(key, value)
