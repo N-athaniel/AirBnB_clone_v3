@@ -22,13 +22,13 @@ classes = {
 }
 
 
-@app_views.route("/status")
+@app_views.route("/status", strict_slashes=False)
 def status():
     """Status of the API"""
     return jsonify({"status": "OK"})
 
 
-@app_views.route("/stats")
+@app_views.route("/stats", strict_slashes=False)
 def stats():
     """Retrieve the number of each objects by type"""
     statistics = {}
