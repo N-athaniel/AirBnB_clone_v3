@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-using flask blueprint factor an application into a set of blueprints.
+initialize the models package
 """
 
 from flask import Blueprint
