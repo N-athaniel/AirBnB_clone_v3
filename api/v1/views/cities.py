@@ -25,7 +25,7 @@ def get_cities(state_id):
     """
     ct = []
     st = storage.get("State", state_id)
-    if st is None:
+    if not st:
         abort(404)
     for city in st.cities:
         ct.append(city.to_dict())
@@ -41,7 +41,7 @@ def get_city(city_id):
     linked to any City object, raise a 404 error.
     """
     ct = storage.get("City", city_id)
-    if ct is None:
+    if not ct:
         abort(404)
     return jsonify(ct.to_dict())
 
@@ -56,7 +56,7 @@ def delete_city(city_id):
     Returns an empty dictionary with the status code 200.
     """
     ct = storage.get("City", city_id)
-    if ct is None:
+    if not ct:
         abort(404)
     ct.delete()
     storage.save()
@@ -79,7 +79,7 @@ def post_city(state_id):
     """
     data = request.get_json()
     st = storage.get("State", state_id)
-    if st is None:
+    if not st:
         abort(404)
     if not data:
         abort(400, description="Not a JSON")
@@ -107,7 +107,7 @@ def put_city(cities_id):
     """
     data = request.get_json()
     ct = storage.get("City", cities_id)
-    if ct is None:
+    if not ct:
         abort(404)
     if not data:
         abort(400, description="Not a JSON")

@@ -36,7 +36,7 @@ def get_user(user_id):
     linked to any User object, raise a 404 error.
     """
     u = storage.get("User", user_id)
-    if u is None:
+    if not u:
         abort(404)
     return jsonify(u.to_dict())
 
@@ -51,7 +51,7 @@ def delete_user(user_id):
     Returns an empty dictionary with the status code 200.
     """
     u = storage.get("User", user_id)
-    if u is None:
+    if not u:
         abort(404)
     u.delete()
     storage.save()
@@ -98,10 +98,10 @@ def put_user(users_id):
         raise a 400 error with the message Not a JSON.
     Returns the User object with the status code 200.
     """
-    u = storage.get("User", users_id)
-    if u is None:
-        abort(404)
     data = request.get_json()
+    u = storage.get("User", users_id)
+    if  not u:
+        abort(404)
     if not data:
         abort(400, description="Not a JSON")
     for k, v in data.items():

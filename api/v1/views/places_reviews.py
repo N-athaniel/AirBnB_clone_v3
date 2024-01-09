@@ -25,10 +25,10 @@ def get_reviews(place_id):
     """
     rv = []
     pl = storage.get("Place", place_id)
-    if pl is None:
+    if not pl:
         abort(404)
-    for review in pl.reviews:
-        rv.append(review.to_dict())
+    for r in pl.reviews:
+        rv.append(r.to_dict())
     return jsonify(rv)
 
 
@@ -41,7 +41,7 @@ def get_review(review_id):
     linked to any review object, raise a 404 error.
     """
     rv = storage.get("Review", review_id)
-    if rv is None:
+    if not rv:
         abort(404)
     return jsonify(rv.to_dict())
 
@@ -56,7 +56,7 @@ def delete_review(review_id):
     Returns an empty dictionary with the status code 200.
     """
     rv = storage.get("Review", review_id)
-    if rv is None:
+    if not rv:
         abort(404)
     rv.delete()
     storage.save()
@@ -81,7 +81,7 @@ def post_review(place_id):
     """
     data = request.get_json()
     pl = storage.get("Place", place_id)
-    if pl is None:
+    if not pl:
         abort(404)
     if not data:
         abort(400, description="Not a JSON")
@@ -89,12 +89,12 @@ def post_review(place_id):
         abort(400, description="Missing user_id")
     else:
         us = storage.get("User", data['user_id'])
-        if us is None:
+        if not us:
             abort(404)
         elif "text" not in data:
             abort(400, description="Missing text")
         rv = Review(**data)
-        rv.place_id = pl.id
+        rv.place_id = place_id
         rv.save()
         return make_response(jsonify(rv.to_dict()), 201)
 
@@ -114,7 +114,7 @@ def put_review(reviews_id):
     """
     data = request.get_json()
     rv = storage.get("Review", reviews_id)
-    if rv is None:
+    if not rv:
         abort(404)
     if not data:
         abort(400, description="Not a JSON")

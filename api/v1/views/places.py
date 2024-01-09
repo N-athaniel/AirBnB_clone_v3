@@ -25,7 +25,7 @@ def get_places(city_id):
     """
     pl = []
     ct = storage.get("City", city_id)
-    if ct is None:
+    if not ct:
         abort(404)
     for place in ct.places:
         pl.append(place.to_dict())
@@ -41,7 +41,7 @@ def get_place(place_id):
     linked to any Place object, raise a 404 error.
     """
     pl = storage.get("Place", place_id)
-    if pl is None:
+    if not pl:
         abort(404)
     return jsonify(pl.to_dict())
 
@@ -56,7 +56,7 @@ def delete_place(place_id):
     Returns an empty dictionary with the status code 200.
     """
     pl = storage.get("Place", place_id)
-    if pl is None:
+    if not pl:
         abort(404)
     pl.delete()
     storage.save()
@@ -79,20 +79,20 @@ def post_place(city_id):
     """
     data = request.get_json()
     ct = storage.get("City", city_id)
-    if ct is None:
+    if not ct:
         abort(404)
     if not data:
         abort(400, description="Not a JSON")
     elif "user_id" not in data:
         abort(400, description="Missing user_id")
+    elif 'name' not in data:
+        abort(400, description="Missing name")
     else:
         user = storage.get("User", data['user_id'])
         if not user:
             abort(404)
-        if 'name' not in data:
-            abort(400, description="Missing name")
         pl = Place(**data)
-        pl.city_id = ct.id
+        pl.city_id = city_id
         pl.save()
         return make_response(jsonify(pl.to_dict()), 201)
 
@@ -112,7 +112,7 @@ def put_place(places_id):
     """
     data = request.get_json()
     pl = storage.get("Place", places_id)
-    if pl is None:
+    if not pl:
         abort(404)
     if not data:
         abort(400, description="Not a JSON")
