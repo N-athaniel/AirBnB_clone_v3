@@ -85,10 +85,10 @@ def post_place(city_id):
         abort(400, description="Not a JSON")
     elif "user_id" not in data:
         abort(400, description="Missing user_id")
-    elif 'name' not in data:
+    elif "name" not in data:
         abort(400, description="Missing name")
     else:
-        user = storage.get("User", data['user_id'])
+        user = storage.get("User", data["user_id"])
         if not user:
             abort(404)
         pl = Place(**data)
@@ -121,3 +121,27 @@ def put_place(places_id):
             setattr(pl, k, v)
     storage.save()
     return make_response(jsonify(pl.to_dict()), 200)
+
+
+@app_views.route("/places_search",
+                 methods=["POST"],
+                 strict_slashes=False)
+def places_search():
+    """
+    retrieves all Place objects depending
+    of the JSON in the body of the request.
+    """
+    data = request.get_json()
+    l_pl = []
+    if not data:
+        abort(400, description="Not a JSON")
+    if data and len(data):
+        am = data.get("amenities", None)
+        ct = data.get("cities", None)
+        st = data.get("states", None)
+    if not data or not len(data) or (
+            not am and not ct and not st):
+        pl = storage.all(Place).values()
+        for p in pl:
+            l_pl.append(p.to_dict())
+        return jsonify(l_pl)
