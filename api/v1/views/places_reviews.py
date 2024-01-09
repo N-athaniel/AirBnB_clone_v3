@@ -69,15 +69,8 @@ def delete_review(review_id):
 def post_review(place_id):
     """
     Creates a review.
-    f the place_id is not linked to any Place object,
-        raise a 404 error.
-    If the HTTP body request is not valid JSON,
-        raise a 400 error with the message Not a JSON.
     If the dictionary doesn’t contain the key user_id,
         raise a 400 error with the message Missing user_id.
-    If the dictionary doesn’t contain the key text,
-        raise a 400 error with the message Missing text.
-    Returns the new review with the status code 201.
     """
     data = request.get_json()
     pl = storage.get("Place", place_id)
@@ -85,18 +78,17 @@ def post_review(place_id):
         abort(404)
     if not data:
         abort(400, description="Not a JSON")
-    elif "user_id" not in data:
+    if "user_id" not in data:
         abort(400, description="Missing user_id")
-    else:
-        us = storage.get("User", data['user_id'])
-        if not us:
-            abort(404)
-        elif "text" not in data:
-            abort(400, description="Missing text")
-        rv = Review(**data)
-        rv.place_id = place_id
-        rv.save()
-        return make_response(jsonify(rv.to_dict()), 201)
+    us = storage.get("User", data['user_id'])
+    if not us:
+        abort(404)
+    if "text" not in data:
+        abort(400, description="Missing text")
+    rv = Review(**data)
+    rv.place_id = place_id
+    rv.save()
+    return make_response(jsonify(rv.to_dict()), 201)
 
 
 @app_views.route("/reviews/<review_id>",
@@ -112,10 +104,10 @@ def put_review(review_id):
         raise a 400 error with the message Not a JSON.
     Returns the review object with the status code 200.
     """
-    data = request.get_json()
     rv = storage.get("Review", review_id)
     if not rv:
         abort(404)
+    data = request.get_json()
     if not data:
         abort(400, description="Not a JSON")
     for k, v in data.items():

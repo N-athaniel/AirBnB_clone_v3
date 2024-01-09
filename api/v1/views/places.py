@@ -83,18 +83,17 @@ def post_place(city_id):
         abort(404)
     if not data:
         abort(400, description="Not a JSON")
-    elif "user_id" not in data:
+    if "user_id" not in data:
         abort(400, description="Missing user_id")
-    elif "name" not in data:
+    u = storage.get("User", data["user_id"])
+    if not u:
+        abort(404)
+    if "name" not in data:
         abort(400, description="Missing name")
-    else:
-        user = storage.get("User", data["user_id"])
-        if not user:
-            abort(404)
-        pl = Place(**data)
-        pl.city_id = city_id
-        pl.save()
-        return make_response(jsonify(pl.to_dict()), 201)
+    pl = Place(**data)
+    pl.city_id = city_id
+    pl.save()
+    return make_response(jsonify(pl.to_dict()), 201)
 
 
 @app_views.route("/places/<place_id>",
@@ -110,10 +109,10 @@ def put_place(place_id):
         raise a 400 error with the message Not a JSON.
     Returns the Place object with the status code 200.
     """
-    data = request.get_json()
     pl = storage.get("Place", place_id)
     if not pl:
         abort(404)
+    data = request.get_json()
     if not data:
         abort(400, description="Not a JSON")
     for k, v in data.items():
