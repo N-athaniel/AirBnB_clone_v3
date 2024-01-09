@@ -107,5 +107,5 @@ def put_user(user_id):
     for k, v in data.items():
         if k not in ["id", "email", "created_at", "updated_at"]:
             setattr(u, k, v)
-    storage.save()
+    u.save()
     return make_response(jsonify(u.to_dict()), 200)

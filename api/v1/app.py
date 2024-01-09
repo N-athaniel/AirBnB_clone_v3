@@ -12,6 +12,7 @@ app.register_blueprint(app_views)
 cors = CORS(app, resources={r"/api/*": {"origins": "0.0.0.0"}})
 host = getenv("HBNB_API_HOST", "0.0.0.0")
 port = getenv("HBNB_API_PORT", "5000")
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
 
 @app.teardown_appcontext
@@ -31,4 +32,4 @@ def not_found(error):
 
 
 if __name__ == "__main__":
-    app.run(host, port, threaded=True)
+    app.run(host, int(port), threaded=True)

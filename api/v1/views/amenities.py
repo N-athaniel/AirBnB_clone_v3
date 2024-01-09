@@ -81,10 +81,10 @@ def post_amenity():
         return make_response(jsonify(a.to_dict()), 201)
 
 
-@app_views.route("/amenities/<amenities_id>",
+@app_views.route("/amenities/<amenity_id>",
                  methods=["PUT"],
                  strict_slashes=False)
-def put_amenity(amenities_id):
+def put_amenity(amenity_id):
     """
     Updates a Amenity object, with all key-value pairs
     of the dictionary.
@@ -97,7 +97,7 @@ def put_amenity(amenities_id):
     data = request.get_json()
     if not data:
         abort(400, description="Not a JSON")
-    a = storage.get("Amenity", amenities_id)
+    a = storage.get("Amenity", amenity_id)
     if a is None:
         abort(404)
     for k, v in data.items():
