@@ -11,9 +11,7 @@ flask RESTful API
 from api.v1.views import app_views
 from flask import jsonify, abort, request, make_response
 from models import storage
-from models.city import City
 from models.place import Place
-from models.user import User
 
 
 @app_views.route("/cities/<city_id>/places",
@@ -26,7 +24,7 @@ def get_places(city_id):
         raise a 404 error
     """
     pl = []
-    ct = storage.get(City, city_id)
+    ct = storage.get("City", city_id)
     if ct is None:
         abort(404)
     for place in ct.places:
@@ -80,7 +78,7 @@ def post_place(city_id):
     Returns the new Place with the status code 201.
     """
     data = request.get_json()
-    ct = storage.get(City, city_id)
+    ct = storage.get("City", city_id)
     if ct is None:
         abort(404)
     if not data:
@@ -88,13 +86,13 @@ def post_place(city_id):
     elif "user_id" not in data:
         abort(400, description="Missing user_id")
     else:
-        user = storage.get(User, data['user_id'])
+        user = storage.get("User", data['user_id'])
         if not user:
             abort(404)
         if 'name' not in data:
             abort(400, description="Missing name")
         pl = Place(**data)
-        pl.city_id = pl.id
+        pl.city_id = ct.id
         pl.save()
         return make_response(jsonify(pl.to_dict()), 201)
 
@@ -113,11 +111,11 @@ def put_place(places_id):
     Returns the Place object with the status code 200.
     """
     data = request.get_json()
-    if not data:
-        abort(400, description="Not a JSON")
     pl = storage.get("Place", places_id)
     if pl is None:
         abort(404)
+    if not data:
+        abort(400, description="Not a JSON")
     for k, v in data.items():
         if k not in ["id", "user_id", "city_id", "created_at", "updated_at"]:
             setattr(pl, k, v)

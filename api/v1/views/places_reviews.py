@@ -11,7 +11,6 @@ flask RESTful API
 from api.v1.views import app_views
 from flask import jsonify, abort, request, make_response
 from models import storage
-from models.place import Place
 from models.review import Review
 
 
@@ -25,7 +24,7 @@ def get_reviews(place_id):
         raise a 404 error
     """
     rv = []
-    pl = storage.get(Place, place_id)
+    pl = storage.get("Place", place_id)
     if pl is None:
         abort(404)
     for review in pl.reviews:
@@ -81,21 +80,21 @@ def post_review(place_id):
     Returns the new review with the status code 201.
     """
     data = request.get_json()
-    pl = storage.get(Place, place_id)
+    pl = storage.get("Place", place_id)
     if pl is None:
         abort(404)
     if not data:
         abort(400, description="Not a JSON")
     elif "user_id" not in data:
         abort(400, description="Missing user_id")
-    elif "text" not in data:
-        abort(400, description="Missing text")
     else:
         us = storage.get("User", data['user_id'])
         if us is None:
             abort(404)
+        elif "text" not in data:
+            abort(400, description="Missing text")
         rv = Review(**data)
-        rv.place_id = rv.id
+        rv.place_id = pl.id
         rv.save()
         return make_response(jsonify(rv.to_dict()), 201)
 
@@ -114,11 +113,11 @@ def put_review(reviews_id):
     Returns the review object with the status code 200.
     """
     data = request.get_json()
-    if not data:
-        abort(400, description="Not a JSON")
     rv = storage.get("Review", reviews_id)
     if rv is None:
         abort(404)
+    if not data:
+        abort(400, description="Not a JSON")
     for k, v in data.items():
         if k not in ["id", "user_id", "place_id", "created_at", "updated_at"]:
             setattr(rv, k, v)

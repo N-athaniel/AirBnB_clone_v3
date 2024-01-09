@@ -12,7 +12,6 @@ from api.v1.views import app_views
 from flask import jsonify, abort, request, make_response
 from models import storage
 from models.city import City
-from models.state import State
 
 
 @app_views.route("/states/<state_id>/cities",
@@ -25,7 +24,7 @@ def get_cities(state_id):
         raise a 404 error
     """
     ct = []
-    st = storage.get(State, state_id)
+    st = storage.get("State", state_id)
     if st is None:
         abort(404)
     for city in st.cities:
@@ -79,7 +78,7 @@ def post_city(state_id):
     Returns the new City with the status code 201.
     """
     data = request.get_json()
-    st = storage.get(State, state_id)
+    st = storage.get("State", state_id)
     if st is None:
         abort(404)
     if not data:
@@ -107,11 +106,11 @@ def put_city(cities_id):
     Returns the City object with the status code 200.
     """
     data = request.get_json()
-    if not data:
-        abort(400, description="Not a JSON")
     ct = storage.get("City", cities_id)
     if ct is None:
         abort(404)
+    if not data:
+        abort(400, description="Not a JSON")
     for k, v in data.items():
         if k not in ["id", "state_id", "created_at", "updated_at"]:
             setattr(ct, k, v)

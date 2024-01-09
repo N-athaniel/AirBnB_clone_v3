@@ -98,12 +98,12 @@ def put_user(users_id):
         raise a 400 error with the message Not a JSON.
     Returns the User object with the status code 200.
     """
-    data = request.get_json()
-    if not data:
-        abort(400, description="Not a JSON")
     u = storage.get("User", users_id)
     if u is None:
         abort(404)
+    data = request.get_json()
+    if not data:
+        abort(400, description="Not a JSON")
     for k, v in data.items():
         if k not in ["id", "email", "created_at", "updated_at"]:
             setattr(u, k, v)
