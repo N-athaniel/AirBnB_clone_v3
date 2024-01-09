@@ -85,10 +85,10 @@ def post_user():
         return make_response(jsonify(u.to_dict()), 201)
 
 
-@app_views.route("/users/<users_id>",
+@app_views.route("/users/<user_id>",
                  methods=["PUT"],
                  strict_slashes=False)
-def put_user(users_id):
+def put_user(user_id):
     """
     Updates a User object, with all key-value pairs
     of the dictionary.
@@ -99,7 +99,7 @@ def put_user(users_id):
     Returns the User object with the status code 200.
     """
     data = request.get_json()
-    u = storage.get("User", users_id)
+    u = storage.get("User", user_id)
     if not u:
         abort(404)
     if not data:

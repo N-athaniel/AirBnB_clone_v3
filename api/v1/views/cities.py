@@ -92,10 +92,10 @@ def post_city(state_id):
         return make_response(jsonify(ct.to_dict()), 201)
 
 
-@app_views.route("/cities/<cities_id>",
+@app_views.route("/cities/<city_id>",
                  methods=["PUT"],
                  strict_slashes=False)
-def put_city(cities_id):
+def put_city(city_id):
     """
     Updates a City object, with all key-value pairs
     of the dictionary.
@@ -106,7 +106,7 @@ def put_city(cities_id):
     Returns the City object with the status code 200.
     """
     data = request.get_json()
-    ct = storage.get("City", cities_id)
+    ct = storage.get("City", city_id)
     if not ct:
         abort(404)
     if not data:

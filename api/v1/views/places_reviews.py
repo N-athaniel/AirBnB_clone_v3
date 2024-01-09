@@ -99,10 +99,10 @@ def post_review(place_id):
         return make_response(jsonify(rv.to_dict()), 201)
 
 
-@app_views.route("/reviews/<reviews_id>",
+@app_views.route("/reviews/<review_id>",
                  methods=["PUT"],
                  strict_slashes=False)
-def put_review(reviews_id):
+def put_review(review_id):
     """
     Updates a review object, with all key-value pairs
     of the dictionary.
@@ -113,7 +113,7 @@ def put_review(reviews_id):
     Returns the review object with the status code 200.
     """
     data = request.get_json()
-    rv = storage.get("Review", reviews_id)
+    rv = storage.get("Review", review_id)
     if not rv:
         abort(404)
     if not data:

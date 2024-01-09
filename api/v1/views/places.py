@@ -97,10 +97,10 @@ def post_place(city_id):
         return make_response(jsonify(pl.to_dict()), 201)
 
 
-@app_views.route("/places/<places_id>",
+@app_views.route("/places/<place_id>",
                  methods=["PUT"],
                  strict_slashes=False)
-def put_place(places_id):
+def put_place(place_id):
     """
     Updates a Place object, with all key-value pairs
     of the dictionary.
@@ -111,7 +111,7 @@ def put_place(places_id):
     Returns the Place object with the status code 200.
     """
     data = request.get_json()
-    pl = storage.get("Place", places_id)
+    pl = storage.get("Place", place_id)
     if not pl:
         abort(404)
     if not data:
