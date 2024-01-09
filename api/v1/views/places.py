@@ -119,5 +119,5 @@ def put_place(places_id):
     for k, v in data.items():
         if k not in ["id", "user_id", "city_id", "created_at", "updated_at"]:
             setattr(pl, k, v)
-    pl.save()
+    storage.save()
     return make_response(jsonify(pl.to_dict()), 200)

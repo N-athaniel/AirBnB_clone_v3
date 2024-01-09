@@ -121,5 +121,5 @@ def put_review(reviews_id):
     for k, v in data.items():
         if k not in ["id", "user_id", "place_id", "created_at", "updated_at"]:
             setattr(rv, k, v)
-    rv.save()
+    storage.save()
     return make_response(jsonify(rv.to_dict()), 200)

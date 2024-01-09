@@ -10,7 +10,6 @@ from api.v1.views import app_views
 from flask import jsonify, abort, request, make_response
 from os import environ
 from models import storage
-from models.amenity import Amenity
 
 
 @app_views.route("/places/<place_id>/amenities",
@@ -29,7 +28,7 @@ def get_amenities_(place_id):
             am.append(r.to_dict())
     for r in pl.amenity_ids:
         if environ.get('HBNB_TYPE_STORAGE') != "db":
-            am.append(storage.get(Amenity, r).to_dict())
+            am.append(storage.get("Amenity", r).to_dict())
     return jsonify(am)
 
 
